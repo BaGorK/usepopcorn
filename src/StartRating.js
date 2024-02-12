@@ -8,39 +8,63 @@ const containerStyle = {
 
 const starContainerStyle = {
   display: 'flex',
-  gap: '4px',
 };
 
 const textStyle = {
   lineHeight: '1',
+  fontSize: '26px',
   margin: '0',
 };
 
 export default function StarRating({ maxRating = 5 }) {
   const [rate, setRate] = useState(0);
+  const [tempRating, setTempRating] = useState(0);
 
-  const onRateHandler = (i) => {
-    setRate(i + 1);
+  const handleRating = (rating) => {
+    setRate(rating);
   };
+
+  const handleMouseEnter = (i) => {
+    setTempRating(i + 1);
+  };
+  const handleMouseLeave = (i) => {
+    setTempRating(0);
+  };
+
   return (
     <div style={containerStyle}>
       <div style={starContainerStyle}>
         {Array.from({ length: maxRating }, (_, i) => (
-          <Star key={i} onRate={() => onRateHandler(i)} isFilled={rate >= i + 1} />
+          <Star
+            key={i}
+            onMouseEnter={() => handleMouseEnter(i)}
+            onMouseLeave={() => handleMouseLeave(i)}
+            onRate={() => handleRating(i + 1)}
+            isFilled={tempRating ? tempRating >= i + 1 : rate >= i + 1}
+          />
         ))}
       </div>
-      <p style={textStyle}>{rate}</p>
+      <p style={textStyle}>{tempRating || rate || ''}</p>
     </div>
   );
 }
 
-const Star = ({ onRate, isFilled }) => {
+const Star = ({ onRate, isFilled, onMouseEnter, onMouseLeave }) => {
   const starStyle = {
     width: '48px',
+    height: '48px',
+    display: 'block',
+    cursor: 'pointer',
   };
 
   return (
-    <span style={starStyle} onClick={onRate}>
+    <span
+      role='button'
+      style={starStyle}
+      onClick={onRate}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       {!isFilled ? (
         <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='#000'>
           <path
