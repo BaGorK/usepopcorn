@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Loading from './components/Loading';
+import Error from './components/Error';
 
 const tempMovieData = [
   {
@@ -50,29 +52,47 @@ const tempWatchedData = [
 const API_KEY = '6d7b592b';
 
 function App() {
-  const [movies, setMovies] = useState(tempMovieData);
+  const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempWatchedData);
+  const [query, setQuery] = useState('interstellarfa');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchMovie = async () => {
-      const res = await fetch(`http://www.omdbapi.com/?apikey=${API_KEY}&s=interstellar`);
-      const data = await res.json();
-      setMovies(data.Search);
+      try {
+        setIsLoading(true);
+        const res = await fetch(`http://www.omdbapi.com/?apikey=${API_KEY}&s=${query}`);
+        if (!res.ok) throw new Error('Something went wrong with fetching movies');
+
+        const data = await res.json();
+        if (data.Response === 'False') throw new Error('Movie not found');
+
+        setMovies(data.Search);
+        console.log(data);
+      } catch (err) {
+        // setError(err.message);
+        console.log(err.message);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchMovie();
-  }, []);
+  }, [query]);
 
   return (
     <>
       <Nav>
         <Logo />
-        <Search />
+        <Search setQuery={setQuery} />
         <NumResults numMovies={movies.length} />
       </Nav>
       <Main>
         <Box>
-          <MovieList movieData={movies} />
+          {isLoading && !error && <Loading />}
+          {!isLoading && error && <Error message={error} />}
+          {!isLoading && !error && <MovieList movieData={movies} />}
         </Box>
         <Box>
           <WatchedSummary WatchedMovieData={watched} />
@@ -96,8 +116,23 @@ function Logo() {
   );
 }
 
-function Search() {
-  return <input className='search' type='text' placeholder='Search Movies...' />;
+function Search({ setQuery }) {
+  // const [val, setVal] = useState('')
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setQuery(e.target.value);
+  };
+
+  return (
+    <input
+      // ref={searchVal}
+      // value={searchVal}
+      onChange={handleSearch}
+      className='search'
+      type='text'
+      placeholder='Search Movies...'
+    />
+  );
 }
 
 function NumResults({ numMovies }) {
@@ -128,7 +163,7 @@ function MovieList({ movieData }) {
 
 function Movie({ movie }) {
   return (
-    <li>
+    <li className='list-hover'>
       <img src={movie.Poster} alt={movie.Title} />
       <div>
         <h3>{movie.Title}</h3>

@@ -1,0 +1,17 @@
+.loader {
+  text-align: center;
+  margin-top: 3rem;
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  p {
+    color: $color-text-dark;
+    letter-spacing: 1.3rem;
+    text-transform: uppercase;
+    font-size: 2.4rem;
+    font-weight: 700;
+    display: inline-block;
+  }
+}
