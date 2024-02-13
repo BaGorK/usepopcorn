@@ -98,5 +98,26 @@ body {
 .main .box .movie-list li span:not(:last-child) {
   padding-right: 1rem;
 }
+.main .box .summary {
+  padding: 2.6rem;
+  border-bottom: 2px solid #343a40;
+}
+.main .box .summary h2 {
+  margin-bottom: 1.6rem;
+}
+.main .box .summary div {
+  display: flex;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+.main .box .summary div span {
+  margin-right: 1rem;
+}
+.main .box .movie-list-detail {
+  display: flex;
+}
+.main .box .movie-list-detail p {
+  margin-right: 1rem;
+}
 
 /*# sourceMappingURL=index.css.map */

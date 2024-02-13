@@ -48,89 +48,154 @@ const tempWatchedData = [
 function App() {
   return (
     <>
-      <nav className='nav-bar'>
-        <div className='logo'>
-          <span role='img'>🍿</span>
-          <h1>usePopcorn</h1>
-        </div>
-        <input className='search' type='text' placeholder='Search Movies...' />
-        <p className='num-results'>
-          Found <strong>5</strong> results
-        </p>
-      </nav>
-      <main className='main'>
-        <div className='box'>
-          <ul className='movie-list'>
-            <li>
-              <img src={tempMovieData[0].Poster} alt={tempMovieData[0].Title} />
-              <div>
-                <h3>{tempMovieData[0].Title}</h3>
-                <p>
-                  <span>🗓</span>
-                  <span>{tempMovieData[0].Year}</span>
-                </p>
-              </div>
-            </li>
-            <li>
-              <img src={tempMovieData[1].Poster} alt={tempMovieData[0].Title} />
-              <div>
-                <h3>{tempMovieData[1].Title}</h3>
-                <p>
-                  <span>🗓</span>
-                  <span>{tempMovieData[1].Year}</span>
-                </p>
-              </div>
-            </li>
-            <li>
-              <img src={tempMovieData[2].Poster} alt={tempMovieData[0].Title} />
-              <div>
-                <h3>{tempMovieData[2].Title}</h3>
-                <p>
-                  <span>🗓</span>
-                  <span>{tempMovieData[2].Year}</span>
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div className='box'>
-          <div>
-            <h3>Movies you Watched</h3>
-            <div>
-              <p>
-                <span>#️⃣</span>
-                <span>{tempWatchedData.length} Movies</span>
-              </p>
-              <p>
-                <span>⭐️</span>
-                <span>{tempWatchedData[0].imdbRating}</span>
-              </p>
-              <p>
-                <span>⭐️</span>
-                <span>{tempWatchedData[0].userRating}</span>
-              </p>
-
-              <p>
-                <span>⏳</span>
-                <span>{''}</span>
-              </p>
-            </div>
-          </div>
-
-          <li>
-            <img src={tempWatchedData[0].Poster} alt={tempWatchedData[0].Title} />
-            <div>
-              <h3>{tempWatchedData[0].Title}</h3>
-              <p>
-                <span>8.8</span>
-                <span>10</span>
-                <span>142min</span>
-              </p>
-            </div>
-          </li>
-        </div>
-      </main>
+      <Nav>
+        <Logo />
+        <Search />
+        <NumResults />
+      </Nav>
+      <Main>
+        <Box>
+          <MovieList />
+        </Box>
+        <Box>
+          <WatchedSummary />
+          <WatchedMovieList />
+        </Box>
+      </Main>
     </>
   );
 }
+
+function Nav({ children }) {
+  return <nav className='nav-bar'>{children}</nav>;
+}
+
+function Logo() {
+  return (
+    <div className='logo'>
+      <span role='img'>🍿</span>
+      <h1>usePopcorn</h1>
+    </div>
+  );
+}
+
+function Search() {
+  return <input className='search' type='text' placeholder='Search Movies...' />;
+}
+
+function NumResults() {
+  return (
+    <p className='num-results'>
+      Found <strong>{tempMovieData.length}</strong> results
+    </p>
+  );
+}
+
+function Main({ children }) {
+  return <main className='main'>{children}</main>;
+}
+
+function Box({ children }) {
+  return <div className='box'>{children}</div>;
+}
+
+function MovieList() {
+  return (
+    <ul className='movie-list'>
+      {tempMovieData.map((movie) => (
+        <Movie movie={movie} key={movie.imdbID} />
+      ))}
+    </ul>
+  );
+}
+
+function Movie({ movie }) {
+  return (
+    <li>
+      <img src={movie.Poster} alt={movie.Title} />
+      <div>
+        <h3>{movie.Title}</h3>
+        <p>
+          <span>🗓</span>
+          <span>{movie.Year}</span>
+        </p>
+      </div>
+    </li>
+  );
+}
+
+function WatchedSummary() {
+  const average = (arr) => {
+    const avgVal = arr.reduce((acc, val) => acc + val, 0);
+    return avgVal / arr.length;
+  };
+
+  const avgImdbRating = average(tempWatchedData.map((watchedData) => watchedData.imdbRating));
+  const avgUserRating = average(tempWatchedData.map((watchedData) => watchedData.userRating));
+  const avgRuntime = average(tempWatchedData.map((watchedData) => watchedData.runtime));
+
+  return (
+    <div className='summary'>
+      <h2>Movies you Watched</h2>
+      <div>
+        <p>
+          <span>#️⃣</span>
+          <span>{tempWatchedData.length} Movies</span>
+        </p>
+        <p>
+          {/* average imdb rating */}
+          <span>⭐️</span>
+          <span>{avgImdbRating}</span>
+        </p>
+        <p>
+          {/* average user rating */}
+          <span>⭐️</span>
+          <span>{avgUserRating}</span>
+        </p>
+
+        <p>
+          {/* average run time */}
+          <span>⏳</span>
+          <span>{avgRuntime} min</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function WatchedMovieList() {
+  return (
+    <ul className='movie-list'>
+      {tempWatchedData.map((watchedMovie) => (
+        <WatchedMovie watchedMovie={watchedMovie} key={watchedMovie.imdbID} />
+      ))}
+    </ul>
+  );
+}
+
+function WatchedMovie({ watchedMovie }) {
+  return (
+    <li>
+      <img src={watchedMovie.Poster} alt={watchedMovie.Title} />
+      <div>
+        <h3>{watchedMovie.Title}</h3>
+        <div className='movie-list-detail'>
+          <p>
+            <span>⭐️</span>
+            <span>{watchedMovie.imdbRating}</span>
+          </p>
+          <p>
+            <span>🌟</span>
+            <span>{watchedMovie.userRating}</span>
+          </p>
+          <p>
+            <span>⏳</span>
+            <span>{watchedMovie.runtime} min</span>
+          </p>
+        </div>
+      </div>
+    </li>
+  );
+}
+
 export default App;

@@ -39,5 +39,33 @@
         }
       }
     }
+
+    .summary {
+      padding: 2.6rem;
+      border-bottom: 2px solid $color-background-100;
+
+      h2 {
+        margin-bottom: 1.6rem;
+      }
+
+      div {
+        display: flex;
+        font-size: 1.6rem;
+        font-weight: 700;
+
+        span {
+          margin-right: 1rem;
+        }
+      }
+    }
+    .movie-list {
+      &-detail {
+        display: flex;
+
+        p {
+          margin-right: 1rem;
+        }
+      }
+    }
   }
 }
