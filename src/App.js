@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 const tempMovieData = [
   {
     imdbID: 'tt1375666',
@@ -45,21 +47,36 @@ const tempWatchedData = [
   },
 ];
 
+const API_KEY = '6d7b592b';
+
 function App() {
+  const [movies, setMovies] = useState(tempMovieData);
+  const [watched, setWatched] = useState(tempWatchedData);
+
+  useEffect(() => {
+    const fetchMovie = async () => {
+      const res = await fetch(`http://www.omdbapi.com/?apikey=${API_KEY}&s=interstellar`);
+      const data = await res.json();
+      setMovies(data.Search);
+    };
+
+    fetchMovie();
+  }, []);
+
   return (
     <>
       <Nav>
         <Logo />
         <Search />
-        <NumResults />
+        <NumResults numMovies={movies.length} />
       </Nav>
       <Main>
         <Box>
-          <MovieList />
+          <MovieList movieData={movies} />
         </Box>
         <Box>
-          <WatchedSummary />
-          <WatchedMovieList />
+          <WatchedSummary WatchedMovieData={watched} />
+          <WatchedMovieList WatchedMovieData={watched} />
         </Box>
       </Main>
     </>
@@ -83,10 +100,10 @@ function Search() {
   return <input className='search' type='text' placeholder='Search Movies...' />;
 }
 
-function NumResults() {
+function NumResults({ numMovies }) {
   return (
     <p className='num-results'>
-      Found <strong>{tempMovieData.length}</strong> results
+      Found <strong>{numMovies}</strong> results
     </p>
   );
 }
@@ -99,10 +116,10 @@ function Box({ children }) {
   return <div className='box'>{children}</div>;
 }
 
-function MovieList() {
+function MovieList({ movieData }) {
   return (
     <ul className='movie-list'>
-      {tempMovieData.map((movie) => (
+      {movieData.map((movie) => (
         <Movie movie={movie} key={movie.imdbID} />
       ))}
     </ul>
@@ -124,15 +141,15 @@ function Movie({ movie }) {
   );
 }
 
-function WatchedSummary() {
+function WatchedSummary({ WatchedMovieData }) {
   const average = (arr) => {
     const avgVal = arr.reduce((acc, val) => acc + val, 0);
     return avgVal / arr.length;
   };
 
-  const avgImdbRating = average(tempWatchedData.map((watchedData) => watchedData.imdbRating));
-  const avgUserRating = average(tempWatchedData.map((watchedData) => watchedData.userRating));
-  const avgRuntime = average(tempWatchedData.map((watchedData) => watchedData.runtime));
+  const avgImdbRating = average(WatchedMovieData.map((watchedMovie) => watchedMovie.imdbRating));
+  const avgUserRating = average(WatchedMovieData.map((watchedMovie) => watchedMovie.userRating));
+  const avgRuntime = average(WatchedMovieData.map((watchedMovie) => watchedMovie.runtime));
 
   return (
     <div className='summary'>
@@ -140,7 +157,7 @@ function WatchedSummary() {
       <div>
         <p>
           <span>#️⃣</span>
-          <span>{tempWatchedData.length} Movies</span>
+          <span>{WatchedMovieData.length} Movies</span>
         </p>
         <p>
           {/* average imdb rating */}
@@ -163,10 +180,10 @@ function WatchedSummary() {
   );
 }
 
-function WatchedMovieList() {
+function WatchedMovieList({ WatchedMovieData }) {
   return (
     <ul className='movie-list'>
-      {tempWatchedData.map((watchedMovie) => (
+      {WatchedMovieData.map((watchedMovie) => (
         <WatchedMovie watchedMovie={watchedMovie} key={watchedMovie.imdbID} />
       ))}
     </ul>
