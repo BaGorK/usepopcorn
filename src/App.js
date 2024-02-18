@@ -2,62 +2,63 @@ import { useEffect, useRef, useState } from 'react';
 import Loading from './components/Loading';
 import Error from './components/Error';
 
-const tempMovieData = [
-  {
-    imdbID: 'tt1375666',
-    Title: 'Inception',
-    Year: '2010',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
-  },
-  {
-    imdbID: 'tt0133093',
-    Title: 'The Matrix',
-    Year: '1999',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg',
-  },
-  {
-    imdbID: 'tt6751668',
-    Title: 'Parasite',
-    Year: '2019',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg',
-  },
-];
+// const tempMovieData = [
+//   {
+//     imdbID: 'tt1375666',
+//     Title: 'Inception',
+//     Year: '2010',
+//     Poster:
+//       'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
+//   },
+//   {
+//     imdbID: 'tt0133093',
+//     Title: 'The Matrix',
+//     Year: '1999',
+//     Poster:
+//       'https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg',
+//   },
+//   {
+//     imdbID: 'tt6751668',
+//     Title: 'Parasite',
+//     Year: '2019',
+//     Poster:
+//       'https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg',
+//   },
+// ];
 
-const tempWatchedData = [
-  {
-    imdbID: 'tt1375666',
-    Title: 'Inception',
-    Year: '2010',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
-    runtime: 148,
-    imdbRating: 8.8,
-    userRating: 10,
-  },
-  {
-    imdbID: 'tt0088763',
-    Title: 'Back to the Future',
-    Year: '1985',
-    Poster:
-      'https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
-    runtime: 116,
-    imdbRating: 8.5,
-    userRating: 9,
-  },
-];
+// const tempWatchedData = [
+//   {
+//     imdbID: 'tt1375666',
+//     Title: 'Inception',
+//     Year: '2010',
+//     Poster:
+//       'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
+//     runtime: 148,
+//     imdbRating: 8.8,
+//     userRating: 10,
+//   },
+//   {
+//     imdbID: 'tt0088763',
+//     Title: 'Back to the Future',
+//     Year: '1985',
+//     Poster:
+//       'https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
+//     runtime: 116,
+//     imdbRating: 8.5,
+//     userRating: 9,
+//   },
+// ];
 
 const API_KEY = '6d7b592b';
 
 function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [watched, setWatched] = useState([]);
 
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedMovieID, setSelectedMovieID] = useState(null);
   // const tempQuery = 'interstellar';
 
   useEffect(() => {
@@ -91,6 +92,16 @@ function App() {
     fetchMovie();
   }, [query]);
 
+  function handleSelectMovie(id) {
+    setSelectedMovieID((selectedMovieID) =>
+      selectedMovieID === id ? null : id
+    );
+  }
+
+  function onCloseMovie() {
+    setSelectedMovieID(null);
+  }
+
   return (
     <>
       <Nav>
@@ -102,11 +113,25 @@ function App() {
         <Box>
           {isLoading && !error && <Loading />}
           {!isLoading && error && <Error message={error} />}
-          {!isLoading && !error && <MovieList movieData={movies} />}
+          {!isLoading && !error && (
+            <MovieList
+              handleSelectMovie={handleSelectMovie}
+              movieData={movies}
+            />
+          )}
         </Box>
         <Box>
-          <WatchedSummary WatchedMovieData={watched} />
-          <WatchedMovieList WatchedMovieData={watched} />
+          {selectedMovieID ? (
+            <MovieDetails
+              onCloseMovie={onCloseMovie}
+              selectedMovieID={selectedMovieID}
+            />
+          ) : (
+            <>
+              <WatchedSummary WatchedMovieData={watched} />
+              <WatchedMovieList WatchedMovieData={watched} />
+            </>
+          )}
         </Box>
       </Main>
     </>
@@ -153,19 +178,23 @@ function Box({ children }) {
   return <div className='box'>{children}</div>;
 }
 
-function MovieList({ movieData }) {
+function MovieList({ movieData, handleSelectMovie }) {
   return (
     <ul className='movie-list'>
       {movieData.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID} />
+        <Movie
+          onClick={() => handleSelectMovie(movie.imdbID)}
+          movie={movie}
+          key={movie.imdbID}
+        />
       ))}
     </ul>
   );
 }
 
-function Movie({ movie }) {
+function Movie({ movie, onClick }) {
   return (
-    <li className='list-hover'>
+    <li className='list-hover' onClick={onClick}>
       <img src={movie.Poster} alt={movie.Title} />
       <div>
         <h3>{movie.Title}</h3>
@@ -178,21 +207,35 @@ function Movie({ movie }) {
   );
 }
 
+function MovieDetails({ selectedMovieID, onCloseMovie }) {
+  return (
+    <div className='details'>
+      <button className='btn-back' onClick={onCloseMovie}>
+        &larr;
+      </button>
+      {selectedMovieID}
+    </div>
+  );
+}
+
 function WatchedSummary({ WatchedMovieData }) {
   const average = (arr) => {
     const avgVal = arr.reduce((acc, val) => acc + val, 0);
     return avgVal / arr.length;
   };
 
-  const avgImdbRating = average(
-    WatchedMovieData.map((watchedMovie) => watchedMovie.imdbRating)
-  );
-  const avgUserRating = average(
-    WatchedMovieData.map((watchedMovie) => watchedMovie.userRating)
-  );
-  const avgRuntime = average(
-    WatchedMovieData.map((watchedMovie) => watchedMovie.runtime)
-  );
+  const avgImdbRating =
+    WatchedMovieData.length > 0
+      ? average(WatchedMovieData.map((watchedMovie) => watchedMovie.imdbRating))
+      : 0;
+  const avgUserRating =
+    WatchedMovieData.length > 0
+      ? average(WatchedMovieData.map((watchedMovie) => watchedMovie.userRating))
+      : 0;
+  const avgRuntime =
+    WatchedMovieData.length > 0
+      ? average(WatchedMovieData.map((watchedMovie) => watchedMovie.runtime))
+      : 0;
 
   return (
     <div className='summary'>
@@ -223,7 +266,8 @@ function WatchedSummary({ WatchedMovieData }) {
   );
 }
 
-function WatchedMovieList({ WatchedMovieData }) {
+function WatchedMovieList({ WatchedMovieData, selectedMovie }) {
+  console.log(selectedMovie);
   return (
     <ul className='movie-list'>
       {WatchedMovieData.map((watchedMovie) => (
