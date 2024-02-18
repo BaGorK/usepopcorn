@@ -54,29 +54,39 @@ const API_KEY = '6d7b592b';
 function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempWatchedData);
-  const [query, setQuery] = useState('interstellarfa');
+
+  const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  // const tempQuery = 'interstellar';
 
   useEffect(() => {
     const fetchMovie = async () => {
       try {
+        setError('');
         setIsLoading(true);
-        const res = await fetch(`http://www.omdbapi.com/?apikey=${API_KEY}&s=${query}`);
-        if (!res.ok) throw new Error('Something went wrong with fetching movies');
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${API_KEY}&s=${query}`
+        );
+        if (!res.ok)
+          throw new Error('Something went wrong with fetching movies');
 
         const data = await res.json();
-        if (data.Response === 'False') throw new Error('Movie not found');
+        if (data.Response === 'False') return setError('Movie not found');
 
         setMovies(data.Search);
-        console.log(data);
       } catch (err) {
-        // setError(err.message);
-        console.log(err.message);
+        setError('Something went wrong!');
       } finally {
         setIsLoading(false);
       }
     };
+
+    if (query.length < 3) {
+      setMovies([]);
+      setError('');
+      return;
+    }
 
     fetchMovie();
   }, [query]);
@@ -85,7 +95,7 @@ function App() {
     <>
       <Nav>
         <Logo />
-        <Search setQuery={setQuery} />
+        <Search query={query} setQuery={setQuery} />
         <NumResults numMovies={movies.length} />
       </Nav>
       <Main>
@@ -116,18 +126,10 @@ function Logo() {
   );
 }
 
-function Search({ setQuery }) {
-  // const [val, setVal] = useState('')
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setQuery(e.target.value);
-  };
-
+function Search({ query, setQuery }) {
   return (
     <input
-      // ref={searchVal}
-      // value={searchVal}
-      onChange={handleSearch}
+      onChange={(e) => setQuery(e.target.value)}
       className='search'
       type='text'
       placeholder='Search Movies...'
@@ -182,9 +184,15 @@ function WatchedSummary({ WatchedMovieData }) {
     return avgVal / arr.length;
   };
 
-  const avgImdbRating = average(WatchedMovieData.map((watchedMovie) => watchedMovie.imdbRating));
-  const avgUserRating = average(WatchedMovieData.map((watchedMovie) => watchedMovie.userRating));
-  const avgRuntime = average(WatchedMovieData.map((watchedMovie) => watchedMovie.runtime));
+  const avgImdbRating = average(
+    WatchedMovieData.map((watchedMovie) => watchedMovie.imdbRating)
+  );
+  const avgUserRating = average(
+    WatchedMovieData.map((watchedMovie) => watchedMovie.userRating)
+  );
+  const avgRuntime = average(
+    WatchedMovieData.map((watchedMovie) => watchedMovie.runtime)
+  );
 
   return (
     <div className='summary'>
