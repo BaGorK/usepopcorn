@@ -236,6 +236,13 @@ function MovieDetails({
     Gener: gener,
   } = movie; // Distructuring and Renaming
 
+  // Changing Pages title
+  useEffect(() => {
+    document.title = `MOVIE | ${title}`;
+
+    return () => (document.title = 'usePopcorn');
+  }, [title]);
+
   let curRating;
   if (watched.some((movie) => movie.imdbID === selectedMovieID)) {
     const curMovie = watched.find((movie) => movie.imdbID === selectedMovieID);
