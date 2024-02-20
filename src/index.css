@@ -191,6 +191,34 @@ body {
   flex-direction: column;
   gap: 2.4rem;
 }
+.main .btn-add {
+  background-color: #6741d9;
+  color: #dee2e6;
+  border: none;
+  border-radius: 10rem;
+  font-size: 1.4rem;
+  padding: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.main .btn-add:hover {
+  background-color: #7950f2;
+}
+.main .btn-delete {
+  position: absolute;
+  right: 2.4rem;
+  height: 1.8rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: none;
+  background-color: #fa5252;
+  color: #212529;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
 
 .loader {
   text-align: center;
