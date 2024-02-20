@@ -1,30 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Loading from './components/Loading';
 import Error from './components/Error';
 import StarRating from './StartRating';
-
-// const tempWatchedData = [
-//   {
-//     imdbID: 'tt1375666',
-//     Title: 'Inception',
-//     Year: '2010',
-//     Poster:
-//       'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
-//     runtime: 148,
-//     imdbRating: 8.8,
-//     userRating: 10,
-//   },
-//   {
-//     imdbID: 'tt0088763',
-//     Title: 'Back to the Future',
-//     Year: '1985',
-//     Poster:
-//       'https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
-//     runtime: 116,
-//     imdbRating: 8.5,
-//     userRating: 9,
-//   },
-// ];
 
 const API_KEY = '6d7b592b';
 
@@ -66,6 +43,7 @@ function App() {
       return;
     }
 
+    onCloseMovie();
     fetchMovie();
   }, [query]);
 
@@ -222,6 +200,17 @@ function MovieDetails({
 
     getMovieDetails();
   }, [selectedMovieID]);
+
+  // Handling Key press events
+  useEffect(() => {
+    function callback(e) {
+      if (e.code === 'Escape') onCloseMovie();
+    }
+
+    document.addEventListener('keydown', callback);
+    // to remove multiple event listeners each time the component unmounts
+    return () => document.removeEventListener('keydown', callback);
+  }, [onCloseMovie]);
 
   const {
     Title: title,
